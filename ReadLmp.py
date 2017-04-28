@@ -49,6 +49,7 @@ def ReadLammpsInData(filename):
         mymap(Total[d+1:d+1+Nums['dihedrals']],Dihedrals)
         return Atoms, Bonds, Angles, Dihedrals, Nums, Types, Boxinfo
 
+#below function under construction
 def ReadDumpFile(filename):
     with open(filename) as infile:
         test = infile.readlines()
