@@ -46,11 +46,35 @@ class dpd_fluid:
         self.idstart += nparticles
         self.totalpart += nparticles
 
+    def gen_coord_ball(self,center,radius,tp,nparticles = 0):
+        # the inputs need a style(start with sphere and rectangle)
+        # a center coordinate for sphere/rectangle
+        # feature is used to specify the geometry
+        i = self.idstart
+        print(i)
+        while i < self.idstart + nparticles + 1:
+            rdn = list(random.uniform(-1,1,3))
+            vnorm = math.sqrt(sum([a**2 for a in rdn]))
+            if vnorm < 1:
+                rescale = [radius*a/vnorm + b for a,b in zip(rdn, center)]
+                i += 1
+                self.myid.append(i)
+                self.mymol.append(0)
+                self.mytp.append(tp)
+                self.myq.append(0)
+                self.x.append(rescale[0])
+                self.y.append(rescale[1])
+                self.z.append(rescale[2])
+        self.idstart += nparticles
+        self.totalpart += nparticles
+
     def write2file(self, outfile):
-        self.gen_coord(self.wallreg, self.walltp, self.wallpar)
-        self.gen_coord(self.outerreg, self.outertp, self.outerpar)
-        self.gen_coord(self.innerreg, self.innertp, self.innerpar)
-        print(self.totalpart)
+        #self.gen_coord(self.wallreg, self.walltp, self.wallpar)
+        #self.gen_coord(self.outerreg, self.outertp, self.outerpar)
+        #self.gen_coord(self.innerreg, self.innertp, self.innerpar)
+        center = [20, 2.5, 10]
+        radius = 0.2
+        self.gen_coord_ball(center,radius,self.innertp, self.innerpar)
         for i in range(self.totalpart):
             arr = ' '.join(map(str,[self.myid[i], self.mymol[i], self.mytp[i],\
                     self.myq[i], self.x[i],self.y[i],self.z[i]]))
