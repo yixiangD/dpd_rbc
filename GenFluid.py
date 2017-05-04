@@ -30,28 +30,29 @@ class dpd_fluid:
         self.innerpar = dpd_fluid.nden*self.rbcv
         self.wallpar = dpd_fluid.nden*self.wallv
 
-    def gen_coord(self,arr,tp,nparticles = 0):
-        # a function used to generate coordinates
-        if nparticles == 0:
-            nparticles = int(abs((arr[1]-arr[0])*(arr[3]-arr[2])*(arr[5]\
-                    -arr[4]))*dpd_fluid.nden)
-        for i in range(self.idstart + 1,self.idstart + nparticles + 1):
+    def gen_coord_rect(self,center,halflen, tp, nparticles = 0):
+        ### center: 3D list coordinates for rectangular box
+        ### halflen: 3D list length inputs for this box
+        ### tp: type value for the particles
+        i = self.idstart
+        while i < self.idstart + nparticles + 1:
+            rdn = list(random.uniform(-1,1,3))
+            rescale = [a*b + c for a,b,c in zip(halflen,rdn,center)]
+            i += 1
             self.myid.append(i)
             self.mymol.append(0)
             self.mytp.append(tp)
             self.myq.append(0)
-            self.x.append(random.uniform(arr[0],arr[1],1)[0])
-            self.y.append(random.uniform(arr[2],arr[3],1)[0])
-            self.z.append(random.uniform(arr[4],arr[5],1)[0])
+            self.x.append(rescale[0])
+            self.y.append(rescale[1])
+            self.z.append(rescale[2])
         self.idstart += nparticles
         self.totalpart += nparticles
 
     def gen_coord_ball(self,center,radius,tp,nparticles = 0):
-        # the inputs need a style(start with sphere and rectangle)
-        # a center coordinate for sphere/rectangle
-        # feature is used to specify the geometry
+        ### center: 3D list  coordinate for sphere
+        ### tp: type value for the particles
         i = self.idstart
-        print(i)
         while i < self.idstart + nparticles + 1:
             rdn = list(random.uniform(-1,1,3))
             vnorm = math.sqrt(sum([a**2 for a in rdn]))
@@ -73,8 +74,10 @@ class dpd_fluid:
         #self.gen_coord(self.outerreg, self.outertp, self.outerpar)
         #self.gen_coord(self.innerreg, self.innertp, self.innerpar)
         center = [20, 2.5, 10]
+        halflen = [2, 0.5, 1.0]
         radius = 0.2
-        self.gen_coord_ball(center,radius,self.innertp, self.innerpar)
+        self.gen_coord_rect(center,halflen,self.innertp, self.innerpar)
+        #self.gen_coord_ball(center,radius,self.innertp, self.innerpar)
         for i in range(self.totalpart):
             arr = ' '.join(map(str,[self.myid[i], self.mymol[i], self.mytp[i],\
                     self.myq[i], self.x[i],self.y[i],self.z[i]]))
